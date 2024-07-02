@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 
 const tempMovieData = [
@@ -184,12 +184,19 @@ function Logo() {
 }
 
 function Search({ query, setQuery }) {
+  const inoutEl = useRef(null);
+
+  useEffect(() => {
+    inoutEl.current.focus();
+  }, []);
+
   return (
     <input
       className="search"
       type="text"
       placeholder="Search movies..."
       value={query}
+      ref={inoutEl}
       onChange={(e) => setQuery(e.target.value)}
     />
   );
