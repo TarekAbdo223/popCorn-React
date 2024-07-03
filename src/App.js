@@ -187,8 +187,17 @@ function Search({ query, setQuery }) {
   const inoutEl = useRef(null);
 
   useEffect(() => {
-    inoutEl.current.focus();
-  }, []);
+    function callBack(e) {
+      if (document.activeElement === inoutEl.current) return;
+
+      if (e.code === "Enter") {
+        inoutEl.current.focus();
+        setQuery("");
+      }
+    }
+    document.addEventListener("keydown", callBack);
+    return () => document.removeEventListener("keydown", callBack);
+  }, [setQuery]);
 
   return (
     <input
@@ -325,6 +334,12 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
 
+  const countRef = useRef(0);
+
+  useEffect(() => {
+    if (userRating) countRef.current = countRef.current + 1;
+  }, [userRating]);
+
   const isWatched = watched.map((movie) => movie.imdbId).includes(selectedId);
   console.log(watched);
 
@@ -354,6 +369,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       imdbRating: Number(imdbRating),
       runtime: Number(runTime.split(" ").at(0)),
       userRating,
+      countRatingDecisions: countRef.current,
     };
 
     onAddWatched(newWatchedMovie);
